@@ -55,6 +55,12 @@ class AipFace extends AipBase {
     private $faceDeleteUrl = 'https://aip.baidubce.com/rest/2.0/face/v3/faceset/face/delete';
 
     /**
+     * 人脸融合 face_merge api url
+     * @var string
+     */
+    private $faceMergeUrl = 'https://aip.baidubce.com/rest/2.0/face/v1/merge';
+
+    /**
      * 用户信息查询 user_get api url
      * @var string
      */
@@ -199,6 +205,39 @@ class AipFace extends AipBase {
         return $this->request($this->multiSearchUrl, json_encode($data),  array(
             'Content-Type' => 'application/json',
         ));
+    }
+
+    /**
+     * 人脸融合
+     * @param $templateImage - 模板图片信息
+     * @param $templateType - 模板图片类型
+     * @param array $templateOptions - 模板可选参数
+     * @description templateOptions列表：
+     *  quality_control 图片质量控制
+     *  face_location 指定模板图中进行人脸融合的人脸框位置 不指定时则默认使用最大的人脸
+    格式形如: {"left": 111.4,"top": 96.56,"width": 98,"height": 98,"rotation": 3}
+    当image_type为FACE_TOKEN时, 此参数无效, 会使用FACE_TOKEN对应的人脸
+     * @param $targetImage
+     * @param $targetType
+     * @param array $targetOptions
+     * @param string $version 服务版本 ，可选（1.0,2.0,3.0），2.0/3.0对merge_degree不生效，对融合效果要求较高可选择2.0（推荐版本），对融合结果的清晰度要求较高可选择3.0
+     * @param string $merge_degree 融合度 关系到融合图与目标图的相似度 越高则越相似 *LOW:较低的融合度* *NORMAL: 一般的融合度* *HIGH: 较高的融合度* *COMPLETE: 完全融合，其效果类似于换脸*
+     * @return mixed
+     */
+    public function merge($templateImage, $templateType, $templateOptions = array(),
+                          $targetImage, $targetType, $targetOptions = array(), $version = '2.0',
+                          $merge_degree = 'COMPLETE')
+    {
+        $data = [
+            'version' => $version, 'merge_degree' => $merge_degree,
+        ];
+        $templateData = ['image' => $templateImage, 'image_type' => $templateType, 'quality_control' => 'HIGH'];
+        $targetData = ['image' => $targetImage, 'image_type' => $targetType, 'quality_control' => 'HIGH'];
+        $data['image_template'] = array_merge($templateData, $templateOptions);
+        $data['image_target'] = array_merge($targetData, $targetOptions);
+        return $this->request($this->faceMergeUrl, json_encode($data), [
+            'Content-Type' => 'application/json',
+        ]);
     }
 
     /**
