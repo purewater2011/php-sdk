@@ -35,6 +35,16 @@ class AipSpeech extends AipBase{
     public $ttsUrl = 'http://tsn.baidu.com/text2audio';
 
     /**
+     * @var string
+     */
+    public $aasrCreateUrl = 'https://aip.baidubce.com/rpc/2.0/aasr/v1/create';
+
+    /**
+     * @var string
+     */
+    public $aasrQueryUrl = 'https://aip.baidubce.com/rpc/2.0/aasr/v1/query';
+
+    /**
      * 判断认证是否有权限
      * @param  array   $authObj 
      * @return boolean          
@@ -108,6 +118,44 @@ class AipSpeech extends AipBase{
         $data = array_merge($data, $options);  
 
         return $this->request($this->asrUrl, $data, array());
+    }
+
+    /**
+     * doc:https://ai.baidu.com/ai-doc/SPEECH/Jkfhon3y6
+     * @param $speech_url
+     * @param string $format : "mp3", "wav", "pcm","m4a","amr"
+     * @param int $pid:语言类型(1134-中文普通话)
+     * @param int $rate
+     * @param int $channel
+     * @param array $options
+     * @return array
+     */
+    public function aasr($speech_url, $format, int $pid = 1134
+                            , int $rate = 8000, $options=array()){
+        $data = array();
+
+        $data['speech_url'] = $speech_url;
+        $data['pid'] = $pid;
+        $data['format'] = $format;
+        $data['rate'] = $rate;
+        $data['channel'] = 1;
+
+        $data = array_merge($data, $options);
+
+        return $this->request($this->aasrCreateUrl, $data, array());
+    }
+
+    /**
+     * doc: https://ai.baidu.com/ai-doc/SPEECH/7kfhp2nr4
+     * @param array $task_ids
+     * @return array
+     */
+    public function aasrTask(array $task_ids){
+        $data = array();
+
+        $data['task_ids'] = $task_ids;
+
+        return $this->request($this->aasrQueryUrl, $data, array());
     }
 
     /**
