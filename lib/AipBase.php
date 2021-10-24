@@ -287,7 +287,7 @@ class AipBase {
      * @param bool $refresh 是否刷新
      * @return array
      */
-    private function auth($refresh=false){
+    public function auth($refresh=false){
 
         //非过期刷新
         if(!$refresh){
