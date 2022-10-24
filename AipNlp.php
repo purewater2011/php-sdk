@@ -316,7 +316,7 @@ class AipNlp extends AipBase {
         $data['content'] = $content;
 
         $data = array_merge($data, $options);
-        $data = mb_convert_encoding(json_encode($data), 'GBK', 'UTF8');
+        $data = mb_convert_encoding(json_encode($data, JSON_UNESCAPED_UNICODE), 'GBK', 'UTF8');
 
         return $this->request($this->keywordUrl, $data);
     }
